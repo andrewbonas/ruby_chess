@@ -38,8 +38,10 @@ class Game
       @board.display_board
       round = 0
       until round == 50  do
+        @board.check_mate?
         @board.insert_token(round)
       @board.display_board
+     
       round +=1
     end
   end

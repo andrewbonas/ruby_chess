@@ -27,7 +27,7 @@ class Tokens
     end
   end
 
-  def self.string_to_class(from,to,token, updated_board)
+  def self.string_to_class(*from,to,token, updated_board)
     destination = updated_board[to[0]][to[1]]
 
     if  ["\u265E", "\u2658"].include?(token)

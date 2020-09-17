@@ -68,21 +68,21 @@ end
 
     #8.times { |i| @board[6][i] = Pawn.new('white').to_s}
    
-    @board[7][0] = Rook.new('white').to_s
+    @board[4][1] = Rook.new('white').to_s
     #@board[7][1] = Knight.new('white').to_s
     #@board[7][2] = Bishop.new('white').to_s
     #@board[7][3] = Queen.new('white').to_s
-    @board[5][0] = King.new('white').to_s
+    @board[4][0] = King.new('white').to_s
     #@board[7][5] = Bishop.new('white').to_s
     #@board[7][6] = Knight.new('white').to_s
-    @board[5][2] = Rook.new('white').to_s
+   # @board[5][2] = Rook.new('white').to_s
   end
 
   def add_black_tokens
 
    # 8.times { |i| @board[1][i] = Pawn.new('black').to_s}
 
-    @board[2][1] = Rook.new('black').to_s
+    #@board[2][1] = Rook.new('black').to_s
     #@board[0][1] = Knight.new('black').to_s
     #@board[1][6] = Bishop.new('black').to_s
     #@board[0][3] = Queen.new('black').to_s
@@ -94,7 +94,7 @@ end
 
   def insert_token(round)
     updated_board = @board
-  
+    check_message
     loop do 
     print 'Type requested move: '
     input = gets.chomp.upcase
@@ -114,29 +114,49 @@ end
       insert_token(round)
     end
    pawn_promotion?
-   
+  end
+  
+  def check_message
+    token = []
+
+    if white_check?(token) || black_check?(token)
+      puts "Check!"
+    end
   end
 
+
+  def move(round,move,token)
+    @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
+    @board[move[0][0]][move[0][1]] = ' '
   
-def move(round,move,token)
-  @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
-  @board[move[0][0]][move[0][1]] = ' '
-  if not_in_check(round,move,token)
-  return
-  else
-    @board[move[0][0]][move[0][1]] = @board[move[1][0]][move[1][1]]
-    @board[move[1][0]][move[1][1]] = ' '
-    puts "You are in check, try again."
-    insert_token(round)
+    if not_in_check(round,move,token)
+      return
+    else
+      @board[move[0][0]][move[0][1]] = @board[move[1][0]][move[1][1]]
+      @board[move[1][0]][move[1][1]] = ' '
+      puts "Invalid move, try again."
+      insert_token(round)
+    end
   end
-end
+
+  def stale_mate?(round)
+    if (round % 2).zero? 
+      @black_locations.all? do |item|
+      stop_check_mate(item[0], item[1], @board) == false
+      end
+    else
+      @white_locations.all? do |item|
+      stop_check_mate(item[0], item[1], @board) == false
+      end
+    end
+  end
 
   def check_mate?
     token = []
 
     if white_check?(token) == true
-      @white_locations.any? do |item|
-        stop_check_mate(item[0], item[1], @board)
+      @white_locations.all? do |item|
+        stop_check_mate(item[0], item[1], @board) == false
       end
     elsif black_check?(token) == true
       @black_locations.all? do |item|
@@ -149,7 +169,7 @@ end
     choices = []
     valid_choices = []
     stop_check = []
-      
+    
     Tokens.string_to_class(from,token, updated_board).each do |move|
       choices << [token, [move[0] + from[0], move[1] + from[1]], from]
     end
@@ -242,11 +262,12 @@ end
 
   def not_in_check(round,move,token)
     destination = move[1]
-      if (round % 2).zero?
-        white_check?(token,destination) == false
-      else
-        black_check?(token,destination) == false
-      end
+  
+    if (round % 2).zero?
+      white_check?(token,destination) == false
+    else
+      black_check?(token,destination) == false
+    end
   end
 
   def pawn_promotion?

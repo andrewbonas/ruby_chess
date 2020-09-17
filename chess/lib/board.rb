@@ -68,25 +68,25 @@ end
 
     #8.times { |i| @board[6][i] = Pawn.new('white').to_s}
    
-   # @board[7][0] = Rook.new('white').to_s
+    @board[7][0] = Rook.new('white').to_s
     #@board[7][1] = Knight.new('white').to_s
     #@board[7][2] = Bishop.new('white').to_s
     #@board[7][3] = Queen.new('white').to_s
-    @board[2][7] = King.new('white').to_s
+    @board[5][0] = King.new('white').to_s
     #@board[7][5] = Bishop.new('white').to_s
     #@board[7][6] = Knight.new('white').to_s
-    @board[1][6] = Rook.new('white').to_s
+    @board[5][2] = Rook.new('white').to_s
   end
 
   def add_black_tokens
 
    # 8.times { |i| @board[1][i] = Pawn.new('black').to_s}
 
-    #@board[6][6] = Rook.new('black').to_s
+    @board[2][1] = Rook.new('black').to_s
     #@board[0][1] = Knight.new('black').to_s
     #@board[1][6] = Bishop.new('black').to_s
     #@board[0][3] = Queen.new('black').to_s
-    @board[0][7] = King.new('black').to_s
+    @board[7][0] = King.new('black').to_s
     #@board[0][5] = Bishop.new('black').to_s
     #@board[0][6] = Knight.new('black').to_s
     #@board[0][7] = Rook.new('black').to_s
@@ -133,6 +133,7 @@ end
 
   def check_mate?
     token = []
+
     if white_check?(token) == true
       @white_locations.any? do |item|
         stop_check_mate(item[0], item[1], @board)
@@ -145,37 +146,35 @@ end
   end
 
   def stop_check_mate(from,token, updated_board)
-      choices = []
-      valid_choices = []
-      duplicate_board = updated_board
-
-      Tokens.string_to_class(from,token, updated_board).each do |move|
-        choices << [token, [move[0] + from[0], move[1] + from[1]], from]
-      end
-
-      choices.each do |n|
-        if n[1][0].between?(0,7) && n[1][1].between?(0,7)
-        Tokens.clear_path([n[2],n[1]], @board ,n[0]) == true
-          valid_choices << n
-        end
-       end
-
-       valid_choices.any? do |n|
-        token_color(n[0])
-        if n[0] == @token_white.join() 
-          white_check?(n[0], n[1]) == false
-          
-        elsif n[0] == @token_black.join()
-          duplicate_board[n[1][0]][n[1][1]] = duplicate_board[n[2][0]][n[2][1]]
-          duplicate_board[n[2][0]][n[2][1]] = ' '
-          if black_check?(n[0], n[1]) == false
-        p n
-        end
-       end
+    choices = []
+    valid_choices = []
+    stop_check = []
+      
+    Tokens.string_to_class(from,token, updated_board).each do |move|
+      choices << [token, [move[0] + from[0], move[1] + from[1]], from]
+    end
+      
+    choices.each do |n|
+      if n[1][0].between?(0,7) && n[1][1].between?(0,7) && Tokens.clear_path([n[2],n[1]], @board ,n[0])   
+        valid_choices << n
       end
     end
-  
-  
+
+    valid_choices.each do |n|
+      token_color(n[0])
+      @board[n[1][0]][n[1][1]] = @board[n[2][0]][n[2][1]]
+      @board[n[2][0]][n[2][1]] = ' '
+        
+      if n[0] == @token_white.join() && white_check?(n[0], n[1]) == false
+        stop_check << true
+      elsif n[0] == @token_black.join() && black_check?(n[0], n[1]) == false
+        stop_check << true
+      end
+      @board[n[2][0]][n[2][1]] = @board[n[1][0]][n[1][1]]
+      @board[n[1][0]][n[1][1]] = ' '
+    end
+    stop_check.any? {|n| n == true}
+  end
 
   def white_check?( *token, destination)
     white_king = "\u2654"
@@ -234,7 +233,6 @@ end
     Tokens.string_to_class(from,king,token, updated_board).each do |move|
       choices << [token, [move[0] + from[0], move[1] + from[1]], from]
     end
-    
     choices.any? do |n|
       if n[1].eql? king 
        Tokens.clear_path([n[2],n[1]], @board ,n[0])

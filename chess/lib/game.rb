@@ -37,11 +37,11 @@ class Game
     def game
       @board.display_board
       round = 0
-      until round == 50  do
-        @board.check_mate?
+      until round == 50 || @board.check_mate?  do
+        
         @board.insert_token(round)
       @board.display_board
-     
+      
       round +=1
     end
   end

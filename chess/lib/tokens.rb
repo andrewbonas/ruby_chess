@@ -5,7 +5,7 @@ require_relative "board.rb"
 class Tokens
 
   def initialize
-  
+   
   end
 
   def self.legal_move?(from,to,token, updated_board)
@@ -33,7 +33,7 @@ class Tokens
     if  ["\u265E", "\u2658"].include?(token)
       Knight::OPTIONS
     elsif ["\u265F", "\u2659"].include?(token)
-      pawn_options(token, from, destination)
+      pawn_options(token, from, to, destination)
     elsif ["\u265B", "\u2655"].include?(token)
       Queen::OPTIONS
     elsif ["\u265C", "\u2656"].include?(token)
@@ -45,21 +45,22 @@ class Tokens
     end
   end
   
-  def self.pawn_options(token, from, destination)
+  def self.pawn_options(token, from, to, destination)
     orgin_row = from[0]
-  if ["\u265F"].include?(token) && orgin_row == 1 && destination == ' '
-    Pawn::FIRST_MOVE_BLACK
-  elsif ["\u265F"].include?(token) && orgin_row != 1 && destination == ' '
-    Pawn::OPTIONS_BLACK
-  elsif ["\u265F"].include?(token) && destination != ' '
-    Pawn::BLACK_ATTACK
-  elsif ["\u2659"].include?(token) && orgin_row != 6 && destination == ' '
-    Pawn::OPTIONS_WHITE
-  elsif ["\u2659"].include?(token) && orgin_row == 6 && destination == ' '
-    Pawn::FIRST_MOVE_WHITE
-  elsif ["\u2659"].include?(token) && destination != ' '
-    Pawn::WHITE_ATTACK
-  end
+    move = [from.flatten(),to]
+    if ["\u265F"].include?(token) && orgin_row != nil && orgin_row[0] == 1 && destination == ' '
+      Pawn::FIRST_MOVE_BLACK
+    elsif ["\u265F"].include?(token) && destination == ' '
+      Pawn::OPTIONS_BLACK
+    elsif ["\u265F"].include?(token) && destination != ' ' 
+      Pawn::BLACK_ATTACK
+    elsif ["\u2659"].include?(token) && orgin_row != nil && orgin_row[0] == 6 && destination == ' '
+      Pawn::FIRST_MOVE_WHITE
+    elsif ["\u2659"].include?(token) && destination == ' ' 
+      Pawn::OPTIONS_WHITE
+    elsif ["\u2659"].include?(token) && destination != ' ' 
+      Pawn::WHITE_ATTACK
+    end
   end
 
   def self.clear_path(move, updated_board, token)

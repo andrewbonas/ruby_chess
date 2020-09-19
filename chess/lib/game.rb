@@ -37,12 +37,13 @@ class Game
     def game
       @board.display_board
       round = 0
-      
-      until round == 50 || @board.check_mate? do
+      #intro
+      #@board.display_board
+      loop do
         @board.insert_token(round)
         @board.display_board
-        check_mate_message(round)
-      break puts "Draw" if @board.stale_mate?(round)
+        break  check_mate_message(round) if @board.check_mate?
+        break puts "Draw" if @board.stale_mate?(round) || round == 49
         round +=1
         end
       end
@@ -51,7 +52,7 @@ class Game
     if (round % 2).zero? && @board.check_mate?
       puts 'Check Mate! White wins.'
     elsif @board.check_mate?
-      puts 'Check Mate Black wins.'
+      puts 'Check Mate! Black wins.'
     end
   end
 end

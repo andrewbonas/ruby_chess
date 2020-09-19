@@ -8,8 +8,6 @@ require_relative "rook.rb"
 require 'matrix'
 
 class Board
-
-  
   
   def  initialize
     @create_board = create_board
@@ -66,30 +64,30 @@ end
 
   def add_white_tokens
 
-    #8.times { |i| @board[6][i] = Pawn.new('white').to_s}
-   
-    @board[4][1] = Rook.new('white').to_s
-    #@board[7][1] = Knight.new('white').to_s
-    #@board[7][2] = Bishop.new('white').to_s
-    #@board[7][3] = Queen.new('white').to_s
-    @board[4][0] = King.new('white').to_s
-    #@board[7][5] = Bishop.new('white').to_s
-    #@board[7][6] = Knight.new('white').to_s
-   # @board[5][2] = Rook.new('white').to_s
+    8.times { |i| @board[6][i] = Pawn.new('white').to_s}
+
+    @board[7][0] = Rook.new('white').to_s
+    @board[7][1] = Knight.new('white').to_s
+    @board[7][2] = Bishop.new('white').to_s
+    @board[7][3] = Queen.new('white').to_s
+    @board[7][4] = King.new('white').to_s
+    @board[7][5] = Bishop.new('white').to_s
+    @board[7][6] = Knight.new('white').to_s
+    @board[7][7] = Rook.new('white').to_s
   end
 
   def add_black_tokens
 
-   # 8.times { |i| @board[1][i] = Pawn.new('black').to_s}
+    8.times { |i| @board[1][i] = Pawn.new('black').to_s}
 
-    #@board[2][1] = Rook.new('black').to_s
-    #@board[0][1] = Knight.new('black').to_s
-    #@board[1][6] = Bishop.new('black').to_s
-    #@board[0][3] = Queen.new('black').to_s
-    @board[7][0] = King.new('black').to_s
-    #@board[0][5] = Bishop.new('black').to_s
-    #@board[0][6] = Knight.new('black').to_s
-    #@board[0][7] = Rook.new('black').to_s
+    @board[0][0] = Rook.new('black').to_s
+    @board[0][1] = Knight.new('black').to_s
+    @board[0][2] = Bishop.new('black').to_s
+    @board[0][3] = Queen.new('black').to_s
+    @board[0][4] = King.new('black').to_s
+    @board[0][5] = Bishop.new('black').to_s
+    @board[0][6] = Knight.new('black').to_s
+    @board[0][7] = Rook.new('black').to_s
   end
 
   def insert_token(round)
@@ -104,7 +102,7 @@ end
     move = @move
     token = @board[move[0][0]][move[0][1]]
     destination = @board[move[1][0]][move[1][1]]
-
+  
    if move_parameters_valid?(updated_board, move, token, round) && castling?(token, destination, move)
       return
    elsif move_parameters_valid?(updated_board, move, token, round) && legal_move?(updated_board, move, token, destination)
@@ -124,13 +122,13 @@ end
     end
   end
 
-
   def move(round,move,token)
+    @last_move = []
     @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
     @board[move[0][0]][move[0][1]] = ' '
   
     if not_in_check(round,move,token)
-      return
+      @last_move.push(move, token)
     else
       @board[move[0][0]][move[0][1]] = @board[move[1][0]][move[1][1]]
       @board[move[1][0]][move[1][1]] = ' '
@@ -139,14 +137,37 @@ end
     end
   end
 
+  def able_en_passant(move, token)
+    choices = []
+    
+    if @last_move != nil
+      previous_move = @last_move.flatten()
+      from = move[0]
+      to = move[1]
+      distance = previous_move[0] - previous_move[2]
+        if previous_move[4] == "\u265F" || previous_move[4] == "\u2659" && distance == 2
+          if token == "\u2659" &&  move[1][0] == previous_move[2] - 1 && move[1][1] == previous_move[3] 
+            Pawn::WHITE_ATTACK.each do |x|
+              choices << [x[0] + from[0], x[1] + from[1]]
+            end
+          elsif token == "\u265F" && move[1][0] == previous_move[2] + 1 && move[1][1] == previous_move[3] 
+            Pawn::BLACK_ATTACK.each do |x|
+              choices << [x[0] + from[0], x[1] + from[1]]
+            end
+          end
+        choices.include? to
+        end
+    end
+  end
+  
   def stale_mate?(round)
     if (round % 2).zero? 
       @black_locations.all? do |item|
-      stop_check_mate(item[0], item[1], @board) == false
+        stop_check_mate(item[0], item[1], @board) == false
       end
     else
       @white_locations.all? do |item|
-      stop_check_mate(item[0], item[1], @board) == false
+        stop_check_mate(item[0], item[1], @board) == false
       end
     end
   end
@@ -371,13 +392,14 @@ end
   end
 
   def legal_move?(updated_board, move, token, destination)
-    Tokens.legal_move?(move.first, move.last, token, updated_board) &&
-    attack?(updated_board, move, token, destination)
+    attack?(updated_board, move, token, destination) && 
+    able_en_passant(move, token) || Tokens.legal_move?(move.first, move.last, token, updated_board)
+    
   end
 
   def attack?(updated_board, move, token, destination)
-    if updated_board[move[1][0]][move[1][1]] != ' ' 
-      valid_attack?(token, destination)
+    if updated_board[move[1][0]][move[1][1]] != ' ' || able_en_passant(move, token)
+      valid_attack?(token, destination, move)
     else 
       true
     end
@@ -391,7 +413,7 @@ end
     lowercase = ('a'..'z')
     uppercase = ('A'..'Z')
     
-    if  token.ord.to_s(16).each_char.any?{ |char| lowercase.cover?(char) || uppercase.cover?(char) }
+    if token.ord.to_s(16).each_char.any?{ |char| lowercase.cover?(char) || uppercase.cover?(char) }
       @token_black << token
     else
       @token_white << token
@@ -412,17 +434,18 @@ end
     @black_token_captures = []
   end
 
-  def valid_attack?(token, destination)
+  def valid_attack?(token, destination, move)
     token_color(token,destination)
-  
     if !@token_black.empty? && !@destination_white.empty?
       @black_token_captures << destination
-      true
     elsif !@token_white.empty? && !@destination_black.empty?
       @white_token_captures << destination
-      true
-    else
-      false
+    elsif able_en_passant(move,token) && token == "\u2659" && destination == ' '
+      @white_token_captures << @board[move[1][0] + 1][move[1][1]]
+      @board[move[1][0] + 1][move[1][1]] = ' '
+    elsif able_en_passant(move,token) && token == "\u265F" && destination == ' '
+      @black_token_captures << @board[move[1][0] - 1][move[1][1]]
+      @board[move[1][0] - 1][move[1][1]] = ' '
     end
   end
 

@@ -28,8 +28,9 @@ class Tokens
   end
 
   def self.string_to_class(*from,to,token, updated_board)
+   unless to.nil?
     destination = updated_board[to[0]][to[1]]
-
+   end
     if  ["\u265E", "\u2658"].include?(token)
       Knight::OPTIONS
     elsif ["\u265F", "\u2659"].include?(token)
@@ -47,7 +48,7 @@ class Tokens
   
   def self.pawn_options(token, from, to, destination)
     orgin_row = from[0]
-    move = [from.flatten(),to]
+    
     if ["\u265F"].include?(token) && orgin_row != nil && orgin_row[0] == 1 && destination == ' '
       Pawn::FIRST_MOVE_BLACK
     elsif ["\u265F"].include?(token) && destination == ' '
@@ -75,7 +76,7 @@ class Tokens
     
     distance_moved(orgin_row, orgin_col, finish_row, finish_col)
     token_direction(orgin_row, orgin_col, finish_row, finish_col)
-    tokens_blocking_way?
+     tokens_blocking_way?
   end
 
   def self.distance_moved(orgin_row, orgin_col, finish_row, finish_col)
@@ -199,10 +200,12 @@ class Tokens
     end
 
   def self.tokens_blocking_way?
+    
     @squares_passed.each do |n|
+      
       row = n[0]
       col = n[1]
-    break false if @board[row][col] != " " 
+     break false if @board[row][col] != ' ' 
     end
   end
 

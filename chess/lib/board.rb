@@ -65,7 +65,7 @@ end
   def add_white_tokens
 
     8.times { |i| @board[6][i] = Pawn.new('white').to_s}
-
+    @board[2][2] = Pawn.new('white').to_s
     @board[7][0] = Rook.new('white').to_s
     @board[7][1] = Knight.new('white').to_s
     @board[7][2] = Bishop.new('white').to_s
@@ -146,11 +146,11 @@ end
       to = move[1]
       distance = previous_move[0] - previous_move[2]
         if previous_move[4] == "\u265F" || previous_move[4] == "\u2659" && distance == 2
-          if token == "\u2659" &&  move[1][0] == previous_move[2] - 1 && move[1][1] == previous_move[3] 
+          if token == "\u2659" &&  move[1][0] == previous_move[2] - 1 && move[1][1] == previous_move[3]
             Pawn::WHITE_ATTACK.each do |x|
               choices << [x[0] + from[0], x[1] + from[1]]
             end
-          elsif token == "\u265F" && move[1][0] == previous_move[2] + 1 && move[1][1] == previous_move[3] 
+          elsif token == "\u265F" && move[1][0] == previous_move[2] + 1 && move[1][1] == previous_move[3]
             Pawn::BLACK_ATTACK.each do |x|
               choices << [x[0] + from[0], x[1] + from[1]]
             end
@@ -161,7 +161,7 @@ end
   end
   
   def stale_mate?(round)
-    if (round % 2).zero? 
+    if (round % 2).zero?
       @black_locations.all? do |item|
         stop_check_mate(item[0], item[1], @board) == false
       end
@@ -190,34 +190,37 @@ end
     choices = []
     valid_choices = []
     stop_check = []
-    
+
     Tokens.string_to_class(from,token, updated_board).each do |move|
       choices << [token, [move[0] + from[0], move[1] + from[1]], from]
     end
-      
+
     choices.each do |n|
-      if n[1][0].between?(0,7) && n[1][1].between?(0,7) && Tokens.clear_path([n[2],n[1]], @board ,n[0])   
-        valid_choices << n
+      if n[1][0].between?(0,7) && n[1][1].between?(0,7) && n.kind_of?(Array)  && @board[n[1][0]][n[1][1]] == ' '
+         if Tokens.clear_path([n[2],n[1]], @board ,n[0])
+          valid_choices << n
       end
     end
+    end
+    clone_board = @board.clone
 
     valid_choices.each do |n|
       token_color(n[0])
-      @board[n[1][0]][n[1][1]] = @board[n[2][0]][n[2][1]]
-      @board[n[2][0]][n[2][1]] = ' '
+      clone_board[n[1][0]][n[1][1]] = clone_board[n[2][0]][n[2][1]]
+      clone_board[n[2][0]][n[2][1]] = ' '
         
       if n[0] == @token_white.join() && white_check?(n[0], n[1]) == false
         stop_check << true
       elsif n[0] == @token_black.join() && black_check?(n[0], n[1]) == false
         stop_check << true
       end
-      @board[n[2][0]][n[2][1]] = @board[n[1][0]][n[1][1]]
-      @board[n[1][0]][n[1][1]] = ' '
+      clone_board[n[2][0]][n[2][1]] = clone_board[n[1][0]][n[1][1]]
+      clone_board[n[1][0]][n[1][1]] = ' '
     end
     stop_check.any? {|n| n == true}
   end
 
-  def white_check?( *token, destination)
+  def white_check?(*token, destination)
     white_king = "\u2654"
     
     if token.join() == white_king
@@ -251,9 +254,9 @@ end
     else
       black_king_location = Matrix[*@board].index(black_king)
     end
-
     @black_locations = []
     white_locations = []
+
     8.times do |x|
       8.times do |y|
         token_color(@board[x][y])
@@ -388,13 +391,12 @@ end
   end
   
   def move_parameters_valid?(updated_board, move, token, round)
-    valid_input?(move) && Tokens.clear_path(move, updated_board, token) && Tokens.players_turn?(token, round) 
+    valid_input?(move) && Tokens.clear_path(move, updated_board, token) && Tokens.players_turn?(token, round)
   end
 
   def legal_move?(updated_board, move, token, destination)
     attack?(updated_board, move, token, destination) && 
-    able_en_passant(move, token) || Tokens.legal_move?(move.first, move.last, token, updated_board)
-    
+   (able_en_passant(move, token) || Tokens.legal_move?(move.first, move.last, token, updated_board))
   end
 
   def attack?(updated_board, move, token, destination)
@@ -405,6 +407,14 @@ end
     end
   end
 
+ # def not_your_token(token,destination)
+  #  token_color(token, destination)
+   # if @token_white.any?
+    #  p  @destination_white.flatten().empty? || @destination_white.flatten() == ' '
+   # elsif @token_black.any?
+    # p @destination_black.flatten().empty? || @destination_black.flatten() == ' '
+   # end
+ # end
   def token_color(token, *destination)
     @token_white =[]
     @token_black = []

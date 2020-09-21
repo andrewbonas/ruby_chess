@@ -7,7 +7,8 @@ class Tokens
   def initialize
    
   end
-
+WHITE = ["\u2657", "\u2654", "\u2658", "\u2659", "\u2655","\u2656"].freeze
+BLACK = ["\u265D", "\u265A", "\u265E", "\u265F", "\u265B", "\u265C"].freeze
   def self.legal_move?(from,to,token, updated_board)
     choices =[]
     string_to_class(from,to,token, updated_board).each do |move|

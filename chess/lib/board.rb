@@ -63,7 +63,7 @@ end
 
 
   def add_white_tokens
-
+    @board[2][2] = Pawn.new('white').to_s
     8.times { |i| @board[6][i] = Pawn.new('white').to_s}
     @board[2][2] = Pawn.new('white').to_s
     @board[7][0] = Rook.new('white').to_s
@@ -124,14 +124,15 @@ end
 
   def move(round,move,token)
     @last_move = []
-    @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
-    @board[move[0][0]][move[0][1]] = ' '
-  
+    clone_board = @board.map(&:clone)
+    clone_board[move[1][0]][move[1][1]] = clone_board[move[0][0]][move[0][1]]
+   
     if not_in_check(round,move,token)
       @last_move.push(move, token)
+      @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
+      @board[move[0][0]][move[0][1]] = ' '
     else
-      @board[move[0][0]][move[0][1]] = @board[move[1][0]][move[1][1]]
-      @board[move[1][0]][move[1][1]] = ' '
+      clone_board[move[0][0]][move[0][1]] = clone_board[move[1][0]][move[1][1]]
       puts "Invalid move, try again."
       insert_token(round)
     end
@@ -196,13 +197,14 @@ end
     end
 
     choices.each do |n|
-      if n[1][0].between?(0,7) && n[1][1].between?(0,7) && n.kind_of?(Array)  && @board[n[1][0]][n[1][1]] == ' '
+      if n[1][0].between?(0,7) && n[1][1].between?(0,7) && n.kind_of?(Array)  &&
+      simulated_valid_attack?(n[0], @board[n[1][0]][n[1][1]], [n[2],n[1]])
          if Tokens.clear_path([n[2],n[1]], @board ,n[0])
-          valid_choices << n
-      end
+           valid_choices << n
+        end
+      end 
     end
-    end
-    clone_board = @board.clone
+  clone_board = @board.map(&:clone)
 
     valid_choices.each do |n|
       token_color(n[0])
@@ -430,7 +432,7 @@ end
     end
 
     unless destination.empty?
-      
+
     if destination.join().ord.to_s(16).each_char.any?{ |char| lowercase.cover?(char) || uppercase.cover?(char) }
       @destination_black << destination
     else 
@@ -442,6 +444,23 @@ end
   def captures
     @white_token_captures = []
     @black_token_captures = []
+  end
+
+  def simulated_valid_attack?(token, destination, move)
+    if @board[move[1][0]][move[1][1]] != ' ' || able_en_passant(move, token)
+    
+      if Tokens::BLACK.any? {|item| item == token} && Tokens::WHITE.any? {|item| item == destination}
+        true
+      elsif Tokens::WHITE.any? {|item| item == token} && Tokens::BLACK.any? {|item| item == destination}
+        true
+      elsif able_en_passant(move,token) && token == "\u2659" && destination == ' '
+        true
+      elsif able_en_passant(move,token) && token == "\u265F" && destination == ' '
+        true
+      end
+    else
+      true
+    end
   end
 
   def valid_attack?(token, destination, move)

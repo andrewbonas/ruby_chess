@@ -80,7 +80,7 @@ end
   def add_black_tokens
 
     8.times { |i| @board[1][i] = Pawn.new('black').to_s}
-
+    @board[4][2] = Pawn.new('black').to_s
     @board[0][0] = Rook.new('black').to_s
     @board[0][1] = Knight.new('black').to_s
     @board[0][2] = Bishop.new('black').to_s
@@ -286,7 +286,7 @@ end
     choices.any? do |n|
       if n[1].eql? king 
        Tokens.clear_path([n[2],n[1]], @board ,n[0])
-     end
+      end
     end
   end
 
@@ -469,9 +469,9 @@ end
 
   def valid_attack?(token, destination, move)
     token_color(token,destination)
-    if !@token_black.empty? && !@destination_white.empty?
+    if !@token_black.empty? && !@destination_white.empty? && destination != ' '
       @black_token_captures << destination
-    elsif !@token_white.empty? && !@destination_black.empty?
+    elsif !@token_white.empty? && !@destination_black.empty? && destination != ' '
       @white_token_captures << destination
     elsif able_en_passant(move,token) && token == "\u2659" && destination == ' '
       @white_token_captures << @board[move[1][0] + 1][move[1][1]]

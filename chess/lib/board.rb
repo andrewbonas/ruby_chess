@@ -14,6 +14,7 @@ class Board
     @add_white_tokens = add_white_tokens
     @add_black_tokens = add_black_tokens
     @captures = captures
+    @previous_move = previous_move
   end
 
   def create_board
@@ -96,7 +97,9 @@ end
     loop do 
     print 'Type requested move: '
     input = gets.chomp.upcase
+    if input.length == 4
     @move = [[8-input[1].to_i, input[0].ord-65], [8-input[-1].to_i, input[-2].ord-65]]
+    end
      break if valid_input?(@move)
     end
     move = @move
@@ -123,30 +126,31 @@ end
   end
 
   def move(round,move,token)
-    @last_move = []
     clone_board = @board.map(&:clone)
-    clone_board[move[1][0]][move[1][1]] = clone_board[move[0][0]][move[0][1]]
-   
+    @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
+    @board[move[0][0]][move[0][1]] = ' '
     if not_in_check(round,move,token)
-      @last_move.push(move, token)
-      @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
-      @board[move[0][0]][move[0][1]] = ' '
+      @last_move.push([move, token])
     else
-      clone_board[move[0][0]][move[0][1]] = clone_board[move[1][0]][move[1][1]]
-      puts "Invalid move, try again."
+      @board[move[0][0]][move[0][1]] = @board[move[1][0]][move[1][1]]
+      @board[move[1][0]][move[1][1]] = ' '
+      puts "Invalid move, try againr."
       insert_token(round)
     end
   end
 
+  def previous_move
+    @last_move = []
+  end
+
   def able_en_passant(move, token)
     choices = []
-    
-    if @last_move != nil
-      previous_move = @last_move.flatten()
+    if @last_move != nil && @last_move.any?
+      previous_move = @last_move.last.flatten()
       from = move[0]
       to = move[1]
       distance = previous_move[0] - previous_move[2]
-        if previous_move[4] == "\u265F" || previous_move[4] == "\u2659" && distance == 2
+        if (previous_move[4] == "\u265F" || previous_move[4] == "\u2659") && distance == 2
           if token == "\u2659" &&  move[1][0] == previous_move[2] - 1 && move[1][1] == previous_move[3]
             Pawn::WHITE_ATTACK.each do |x|
               choices << [x[0] + from[0], x[1] + from[1]]
@@ -479,6 +483,8 @@ end
   end
 
   def valid_input?(move)
-   move[0][0].between?(0,7) && move[0][1].between?(0,7) && move[1][0].between?(0,7) && move[1][1].between?(0,7) && @board[move[0][0]][move[0][1]] != ' '
+    move != nil && move[0][0].between?(0,7) && move[0][1].between?(0,7) &&
+    move[1][0].between?(0,7) && move[1][1].between?(0,7) && @board[move[0][0]][move[0][1]] != ' '
   end
+
 end

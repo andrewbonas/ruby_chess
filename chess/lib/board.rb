@@ -5,6 +5,7 @@ require_relative "king.rb"
 require_relative "knight.rb"
 require_relative "queen.rb"
 require_relative "rook.rb"
+
 require 'matrix'
 
 class Board
@@ -64,9 +65,8 @@ end
 
 
   def add_white_tokens
-    @board[2][2] = Pawn.new('white').to_s
     8.times { |i| @board[6][i] = Pawn.new('white').to_s}
-    @board[2][2] = Pawn.new('white').to_s
+    
     @board[7][0] = Rook.new('white').to_s
     @board[7][1] = Knight.new('white').to_s
     @board[7][2] = Bishop.new('white').to_s
@@ -80,7 +80,7 @@ end
   def add_black_tokens
 
     8.times { |i| @board[1][i] = Pawn.new('black').to_s}
-    @board[4][2] = Pawn.new('black').to_s
+    
     @board[0][0] = Rook.new('black').to_s
     @board[0][1] = Knight.new('black').to_s
     @board[0][2] = Bishop.new('black').to_s
@@ -96,17 +96,29 @@ end
     check_message
     loop do 
     print 'Type requested move: '
-    input = gets.chomp.upcase
-    if input.length == 4
-    @move = [[8-input[1].to_i, input[0].ord-65], [8-input[-1].to_i, input[-2].ord-65]]
+    @input = gets.chomp.upcase
+    if @input.length == 4
+    @move = [[8-@input[1].to_i, @input[0].ord-65], [8-@input[-1].to_i, @input[-2].ord-65]]
+    elsif @input == 'S'
+      save_game?(true)
+      break
+    elsif @input == 'D'
+      puts 'Are you sure you want to call a Draw? (Type Y/N)'
+      possible_draw = gets.chomp.upcase
+       if possible_draw == 'Y'
+        Puts "Draw"
+        exit
+       end
     end
      break if valid_input?(@move)
     end
     move = @move
     token = @board[move[0][0]][move[0][1]]
     destination = @board[move[1][0]][move[1][1]]
-  
-   if move_parameters_valid?(updated_board, move, token, round) && castling?(token, destination, move)
+    p @input
+  if  @input == 'S'
+    return
+  elsif move_parameters_valid?(updated_board, move, token, round) && castling?(token, destination, move)
       return
    elsif move_parameters_valid?(updated_board, move, token, round) && legal_move?(updated_board, move, token, destination)
     move(round,move,token)
@@ -117,6 +129,12 @@ end
    pawn_promotion?
   end
   
+def save_game?(save = nil)
+  if save == true
+   return true
+end
+end
+
   def check_message
     token = []
 
@@ -126,7 +144,6 @@ end
   end
 
   def move(round,move,token)
-    clone_board = @board.map(&:clone)
     @board[move[1][0]][move[1][1]] = @board[move[0][0]][move[0][1]]
     @board[move[0][0]][move[0][1]] = ' '
     if not_in_check(round,move,token)
@@ -199,7 +216,6 @@ end
     Tokens.string_to_class(from,token, updated_board).each do |move|
       choices << [token, [move[0] + from[0], move[1] + from[1]], from]
     end
-
     choices.each do |n|
       if n[1][0].between?(0,7) && n[1][1].between?(0,7) && n.kind_of?(Array)  &&
       simulated_valid_attack?(n[0], @board[n[1][0]][n[1][1]], [n[2],n[1]])
@@ -413,14 +429,6 @@ end
     end
   end
 
- # def not_your_token(token,destination)
-  #  token_color(token, destination)
-   # if @token_white.any?
-    #  p  @destination_white.flatten().empty? || @destination_white.flatten() == ' '
-   # elsif @token_black.any?
-    # p @destination_black.flatten().empty? || @destination_black.flatten() == ' '
-   # end
- # end
   def token_color(token, *destination)
     @token_white =[]
     @token_black = []
@@ -488,3 +496,4 @@ end
   end
 
 end
+

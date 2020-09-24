@@ -1,4 +1,3 @@
-require 'colorize'
 require_relative "pawn.rb"
 require_relative "bishop.rb"
 require_relative "king.rb"
@@ -7,13 +6,15 @@ require_relative "queen.rb"
 require_relative "rook.rb"
 require_relative "board.rb"
 require_relative "tokens.rb"
+
+require 'colorize'
 require 'yaml'
 
 class Game
 
     def initialize
       @board = Board.new
-      @tokens = Tokens.new
+    #  @tokens = Tokens.new
       @round = round
       @intro = intro
       @game = game

@@ -1,6 +1,3 @@
-require_relative "tokens.rb"
-
-
 class Knight 
   def initialize(color)
     @color = color
@@ -20,7 +17,4 @@ class Knight
   def to_s
     @knight_symbol
   end
-end
-
-
- 
+end 

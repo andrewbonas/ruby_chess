@@ -23,4 +23,3 @@ class Pawn
     @pawn_symbol
   end
 end
-

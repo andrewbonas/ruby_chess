@@ -1,3 +1,3 @@
 # Ruby command line chess
 
-![Ruby chess Demo](andrewbonas/demos/ruby_chess_example.gif)
+![Ruby chess Demo](https://github.com/andrewbonas/demos/blob/master/ruby_chess_example.gif)

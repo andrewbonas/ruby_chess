@@ -100,7 +100,7 @@ end
     if @input.length == 4
     @move = [[8-@input[1].to_i, @input[0].ord-65], [8-@input[-1].to_i, @input[-2].ord-65]]
     elsif @input == 'S'
-      save_game?(true)
+      save_game?
       break
     elsif @input == 'D'
       puts 'Are you sure you want to call a Draw? (Type Y/N)'
@@ -115,7 +115,7 @@ end
     move = @move
     token = @board[move[0][0]][move[0][1]]
     destination = @board[move[1][0]][move[1][1]]
-    p @input
+    
   if  @input == 'S'
     return
   elsif move_parameters_valid?(updated_board, move, token, round) && castling?(token, destination, move)
@@ -129,9 +129,9 @@ end
    pawn_promotion?
   end
   
-def save_game?(save = nil)
-  if save == true
-   return true
+def save_game?
+if @input == 'S'
+  true
 end
 end
 

@@ -25,9 +25,7 @@ module Tokens
   end
 
   def string_to_class(*from,to,token, updated_board)
-    unless to.nil?
-      destination = updated_board[to[0]][to[1]]
-    end
+    destination = updated_board[to[0]][to[1]] unless to.nil?
     if  ["\u265E", "\u2658"].include?(token)
       Knight::OPTIONS
     elsif ["\u265F", "\u2659"].include?(token)
@@ -87,25 +85,25 @@ module Tokens
 
   def  token_direction(orgin_row, orgin_col, finish_row, finish_col)
     if orgin_row > finish_row && orgin_col < finish_col
-      token_north_east(orgin_row, orgin_col, finish_row, finish_col)
+      token_north_east(orgin_row, orgin_col)
     elsif orgin_row > finish_row && orgin_col > finish_col
-      token_north_west(orgin_row, orgin_col, finish_row, finish_col)
+      token_north_west(orgin_row, orgin_col)
     elsif orgin_row < finish_row && orgin_col > finish_col
-      token_south_west(orgin_row, orgin_col, finish_row, finish_col)
+      token_south_west(orgin_row, orgin_col)
     elsif orgin_row < finish_row && orgin_col < finish_col
-      token_south_east(orgin_row, orgin_col, finish_row, finish_col)
+      token_south_east(orgin_row, orgin_col)
     elsif orgin_row > finish_row && orgin_col == finish_col
-      token_north(orgin_row, orgin_col, finish_row, finish_col)
+      token_north(orgin_row, orgin_col)
     elsif orgin_row < finish_row && orgin_col == finish_col
-      token_south(orgin_row, orgin_col, finish_row, finish_col)
+      token_south(orgin_row, orgin_col)
     elsif orgin_row == finish_row && orgin_col > finish_col 
-      token_west(orgin_row, orgin_col, finish_row, finish_col)
+      token_west(orgin_row, orgin_col)
     elsif orgin_row == finish_row && orgin_col < finish_col
-      token_east(orgin_row, orgin_col, finish_row, finish_col)
+      token_east(orgin_row, orgin_col)
     end
   end
 
-  def token_north_east(orgin_row, orgin_col, finish_row, finish_col)
+  def token_north_east(orgin_row, orgin_col)
     # puts "North East"
     after_orgin_row = orgin_row - 1
     after_orgin_col = orgin_col + 1
@@ -116,7 +114,7 @@ module Tokens
     spaces_moved.times {|n| @squares_passed << [(@mixed_moves[0 + n]), (@mixed_moves[first_col] + n)]}
   end
     
-  def token_north_west(orgin_row, orgin_col, finish_row, finish_col)
+  def token_north_west(orgin_row, orgin_col)
     # puts "North West"
     after_orgin_row = orgin_row - 1
     after_orgin_col = orgin_col - 1 
@@ -127,7 +125,7 @@ module Tokens
     spaces_moved.times {|n| @squares_passed << [(@mixed_moves[0 + n]), (@mixed_moves[first_col] + n)]}
   end
 
-  def token_south_west(orgin_row, orgin_col, finish_row, finish_col)
+  def token_south_west(orgin_row, orgin_col)
     # puts "South West"
     after_orgin_row = orgin_row + 1
     after_orgin_col = orgin_col - 1 
@@ -138,7 +136,7 @@ module Tokens
     spaces_moved.times {|n| @squares_passed << [(@mixed_moves[0 + n]), (@mixed_moves[first_col] - n)]}
   end
 
-  def token_south_east(orgin_row, orgin_col, finish_row, finish_col)
+  def token_south_east(orgin_row, orgin_col)
     # puts "South East"
     after_orgin_row = orgin_row + 1
     after_orgin_col = orgin_col + 1
@@ -149,7 +147,7 @@ module Tokens
     spaces_moved.times {|n| @squares_passed << [(@mixed_moves[0 + n]), (@mixed_moves[first_col] + n)]}
   end
 
-  def token_north(orgin_row, orgin_col, finish_row, finish_col)
+  def token_north(orgin_row, orgin_col)
     # puts "North"
     after_orgin_row = orgin_row - 1
     after_orgin_col = orgin_col  
@@ -160,7 +158,7 @@ module Tokens
     spaces_moved.times {|n| @squares_passed << [(@mixed_moves[0 + n]), (@mixed_moves[first_col])]}
   end
 
-  def self.token_south(orgin_row, orgin_col, finish_row, finish_col)
+  def self.token_south(orgin_row, orgin_col)
     # puts "South"
     after_orgin_row = orgin_row + 1
     after_orgin_col = orgin_col  
@@ -171,7 +169,7 @@ module Tokens
     spaces_moved.times {|n| @squares_passed << [(@mixed_moves[0 + n]), (@mixed_moves[first_col])]}
   end
   
-  def token_west(orgin_row, orgin_col, finish_row, finish_col)
+  def token_west(orgin_row, orgin_col)
     # puts "West"
     after_orgin_row = orgin_row 
     after_orgin_col = orgin_col - 1
@@ -182,7 +180,7 @@ module Tokens
     spaces_moved.times {|n| @squares_passed << [(@mixed_moves[0]), (@mixed_moves[first_col] - n)]}
   end
 
-  def token_east(orgin_row, orgin_col, finish_row, finish_col)
+  def token_east(orgin_row, orgin_col)
     # puts "East"
     after_orgin_row = orgin_row 
     after_orgin_col = orgin_col + 1
@@ -197,7 +195,7 @@ module Tokens
     @squares_passed.each do |n|
       row = n[0]
       col = n[1]
-     break false if @board[row][col] != ' ' 
+    break false if @board[row][col] != ' ' 
     end
   end
 end

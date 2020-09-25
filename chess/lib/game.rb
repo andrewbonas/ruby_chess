@@ -10,21 +10,6 @@ class Game
     @game_play = game_play
   end
 
-  def rules
-    puts 'Here are the rules'
-    gets.chomp
-    puts 'Two players are required to play'
-    gets.chomp
-    puts 'White will go first (outlined pieces)'
-    gets.chomp
-    puts 'Type S to save game at anypoint'
-    gets.chomp
-    puts 'To move the chess pieces use algebraic notation'
-    gets.chomp
-    puts 'Example: a2 a4'
-    gets.chomp
-  end
-
   def intro
     puts 'Welcome to command line Chess!'
     gets.chomp
@@ -34,6 +19,21 @@ class Game
     game_play
   end
 
+  def rules
+    puts 'Two players are required to play'
+    gets.chomp
+    puts 'White will go first (outlined pieces)'
+    gets.chomp
+    puts 'Type S to save game at anypoint'
+    gets.chomp
+    puts 'Type D to call a draw at anypoint'
+    gets.chomp
+    puts 'To move the chess pieces use algebraic notation'
+    gets.chomp
+    puts 'Example: a2 a4'
+    gets.chomp
+  end
+  
   def round
     @round = 0
   end

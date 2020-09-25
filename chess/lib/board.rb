@@ -96,7 +96,7 @@ class Board
         puts 'Are you sure you want to call a Draw? (Type Y/N)'
         possible_draw = gets.chomp.upcase
          if possible_draw == 'Y'
-           Puts "Draw"
+           puts "Draw"
            exit
          end
       end
@@ -175,7 +175,7 @@ class Board
       end
     end
   end
-  
+
   def stale_mate?(round)
     if (round % 2).zero?
       @black_locations.all? do |item|
@@ -391,7 +391,7 @@ class Board
       'long'
     end
   end
-  
+
   def move_parameters_valid?(updated_board, move, token, round)
     valid_input?(move) && Tokens.clear_path(move, updated_board, token) && Tokens.players_turn?(token, round)
   end

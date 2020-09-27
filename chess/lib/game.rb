@@ -52,7 +52,7 @@ class Game
       @round +=1
     end
   end
-  
+
   def check_mate_message(round)
     if (round % 2).zero? && @board.check_mate?
       puts 'Check Mate! White wins.'
@@ -99,4 +99,6 @@ class Game
   end
 end
 
-Game.new
+if __FILE__ == $0
+  Game.new
+end

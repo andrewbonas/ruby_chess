@@ -54,8 +54,8 @@ class Board
     n -= 1
     end
     puts
-    puts "   a  b  c  d  e  f  g  h"
-    print "  #{@white_token_captures.join(" ")}" if @white_token_captures != nil
+    puts '   a  b  c  d  e  f  g  h'
+    print "  #{@white_token_captures.join(' ')}" if @white_token_captures != nil
     puts
   end
 
@@ -86,7 +86,7 @@ class Board
   def user_input
     loop do 
       print 'Type requested move: '
-      @input = gets.chomp.upcase
+      @input = $stdin.gets.chomp.upcase
       if @input.length == 4
         @move = [[8-@input[1].to_i, @input[0].ord-65], [8-@input[-1].to_i, @input[-2].ord-65]]
       elsif @input == 'S'
@@ -94,9 +94,9 @@ class Board
         break
       elsif @input == 'D'
         puts 'Are you sure you want to call a Draw? (Type Y/N)'
-        possible_draw = gets.chomp.upcase
+        possible_draw = $stdin.gets.chomp.upcase
          if possible_draw == 'Y'
-           puts "Draw"
+           puts 'Draw'
            exit
          end
       end
@@ -108,6 +108,9 @@ class Board
     if @input == 'S'
       true
     end
+  end
+  def updated_board
+    @board
   end
 
   def insert_token(round)
@@ -133,7 +136,7 @@ class Board
   def check_message
     token = []
     if white_check?(token) || black_check?(token)
-      puts "Check!"
+      puts 'Check!'
     end
   end
 
@@ -201,6 +204,8 @@ class Board
     end
   end
 
+  private
+  
   def stop_check_mate(from,token, updated_board)
     choices = []
     valid_choices = []
@@ -369,11 +374,11 @@ class Board
 
   def castling?(token, destination, move)
     pieces = [token, destination]
-    if pieces.include?("\u2654") && pieces.include?("\u2656") && castling_directions(move) && white_check? == false
+    if pieces.include?("\u2654") && pieces.include?("\u2656") && castling_directions(move) && white_check?(token) == false
       color = "white"
       direction = castling_directions(move)
       castling_move(color,direction)
-    elsif pieces.include?("\u265A") && pieces.include?("\u265C") && castling_directions(move) && black_check? == false
+    elsif pieces.include?("\u265A") && pieces.include?("\u265C") && castling_directions(move) && black_check?(token) == false
       color = "black"
       direction = castling_directions(move)
       castling_move(color,direction)

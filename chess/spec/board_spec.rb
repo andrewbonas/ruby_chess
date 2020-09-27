@@ -22,4 +22,17 @@ RSpec.describe Board do
     expect(subject.add_black_tokens).to eq(Rook.new('black').to_s)
     end
   end
+
+   describe '#user_input' do
+     context 'a valid input was made' do
+       before do
+         allow(subject).to receive(:valid_input?) { true }
+       end
+       it 'breaks the loop' do
+         allow(subject).to receive(:gets).and_return('a2a4')
+         expect(subject).to receive(:valid_input?).once
+         subject.user_input
+       end
+     end
+   end
 end

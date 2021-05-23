@@ -1,8 +1,8 @@
 # Command Line Chess
 
 ## General info
-The goal of this final assignment was to apply all skills that were gained in the ruby section of The Odin Project
-To find out more visit [The Odin Project](https://www.theodinproject.com/paths/full-stack-ruby-on-rails/courses/ruby-programming/lessons/ruby-final-project) 
+The goal of this final assignment was to apply all skills that were gained in the Ruby section of The Odin Project.
+To find out more visit [The Odin Project](https://www.theodinproject.com/paths/full-stack-ruby-on-rails/courses/ruby-programming/lessons/ruby-final-project).
 	
 ## Technologies
 Project is created with:

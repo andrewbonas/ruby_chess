@@ -12,7 +12,7 @@ Project is created with:
 	
 ## Setup
 
-To run ruby chess in the CLI, install locally, install the colorize ![gem](https://github.com/fazibear/colorize) and:
+To run ruby chess in the CLI, install locally, install the colorize [gem](https://github.com/fazibear/colorize) and:
 
 ```
 $ cd ruby_chess
